@@ -1,0 +1,17 @@
+# Runner scripts
+runner/__pycache__/
+runner/*_T*/        # per-task sandboxes (auto-generated)
+runner/*_prompt.txt
+runner/*.log
+results2/*.log
+results2/*_summary.json
+results2/all5_final.json
+results2/gw.debug.log
+
+# Local config with keys — never commit
+*.yaml
+!config.example.yaml
+
+# Auth / secrets
+.env
+**/.env
