@@ -1,72 +1,84 @@
 # CLI Agent 能力矩阵（2026-08-10 · 本机实测/配置）
 
-标注：✅ 本机实测可用 · ◐ 配置支持/本机受限 · ❌ 不支持
+标注：✅ 本机实测可用 · ◐ 配置支持/本机受限 · ❌ 不支持 · ❓ 未验证
 
 ## 核心工具集
 
-| 能力 | codex | hermes | reasonix | opencode | omp | mimo |
-|------|-------|--------|----------|----------|-----|------|
-| 文件读写 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 终端/代码执行 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 网页搜索/联网 | ◐ browser_use | ✅ web_search | ✅ /search-engine | 待测 | 待测 | 待测 |
-| 生图 | ❌ 本机不可用 | ✅ FAL | ❌ | ❌ | ❌ | ❌ |
-| 图片输入 | ✅ -i | ✅ --image | ❌ | ✅ -f | ❌ | ✅ -f |
-| MCP 服务器 | ✅ mcp | ✅ | ✅ mcp | ✅ mcp | 待测 | ✅ mcp |
+| 能力 | codex | reasonix | freebuff | hermes | opencode | omp | mimo |
+|------|-------|----------|----------|--------|----------|-----|------|
+| 文件读写 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 终端/命令 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 联网搜索 | ✅ Keenable MCP | ❌ | ✅ 内置web research | ✅ Keenable | ❌ | ❌ | ❌ |
+| 浏览器自动化 | ❌ browser_use不暴露 | ❌ | ✅ 内置browser use | ◐ 有但糙 | ❌ | ❌ | ❌ |
+| 生图 | ❌ image_gen不暴露 | ❌ | ❌ | ✅ FAL | ❌ | ❌ | ❌ |
+| MCP | ✅ | ❌ | ❓ | ✅ | ✅ | ❌ | ❌ |
+| 技能系统 | ✅ skills | ❌ | ❌ | ✅ 深集成 | ✅ plugin | ❌ | ❌ |
 
-## 工作流/增强
+## 模型 / 通道
 
-| 能力 | codex | hermes | reasonix | opencode | omp | mimo |
-|------|-------|--------|----------|----------|-----|------|
-| 多模型路由 | ❌ | ✅ fallback链 | ✅ 双模型 | ❌ | ✅ smol/slow/plan | ❌ |
-| 技能/插件 | ✅ skills | ✅ skills | ✅ skills | ✅ plugins | ❌ | ✅ plugins |
-| 沙箱/审批 | ✅ 3级sandbox | ✅ --yolo | ✅ 权限模式 | ✅ --pure | ✅ --tools | ✅ --pure |
-| 多 agent 协作 | ✅ multi_agent | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 飞书/微信 IM | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| agent | 模型来源 | 免费性 |
+|-------|---------|--------|
+| codex | 自配 (4202 omniroute) | 工具免费，模型自付 |
+| reasonix | 自配 (4202 + OMNIROUTE_API_KEY) | 工具免费，模型自付 |
+| freebuff | 内置 DeepSeek V4 Pro/MiMo/MiniMax M3 | ✅ 广告支持全免费（limited模式6次/天） |
+| hermes | 自配 (omniroute 4202 + fallback链) | 工具免费，模型自付 |
+| opencode | 自配 (opencode-zen) | 工具免费，模型自付 |
+| omp | 自配 (sensenova/deepseek) | 工具免费，模型自付 |
+| mimo | 自配 (opencode-zen) | 工具免费，模型自付 |
 
-## 效率/省钱（命中率代理指标）
+## 工作流 / 增强功能
 
-**命中率 = 一次写对不返工。动作越少、cache 命中率越高 = 越省钱。**
-
-| 指标 | codex | reasonix | hermes | opencode | omp | mimo |
-|------|-------|----------|--------|----------|-----|------|
-| 实测 token 消耗 | 460K 总量 | **1.47M 总/≈100K cache miss** | 无报告 | 无报告 | 无报告 | 无报告 |
-| cache 命中率 | 无数据 | **95%+** | 无数据 | 无数据 | 无数据 | 无数据 |
-| 工具调用步数/任务 | 无数据 | 4-8 步 | 4-5 步 | 3-4 步 | 1-2 步 | 0-8 步 |
-| 日志行数/6任务 | 331 | 未统计 | 349 | 239 | **83** | 239 |
-| 省 token 评级 | ⭐⭐ | **⭐⭐⭐⭐⭐** | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-
-**说明**：
-- **reasonix cache 命中率 95%+**：T1 130K cache hit / 2K miss、T3 132K/1.4K、T6 88K/0.6K。prefix-cache stability 实战有效，虽然总 token 多但实际付费极少。
-- **codex** 有精确 token 数（460K 总量），但无 cache 命中数据，全额付费。
-- **reasonix 工具步数 4-8**：一次写对，不反复试错，T1/T3 仅 4 步完成。
-- **omp 日志最精简**（83 行），一次到位不返工，命中率最高。
-- 其他 agent 无 token 报告，无法精确量化。
+| 功能 | codex | reasonix | freebuff | hermes | opencode | omp | mimo |
+|------|-------|----------|----------|--------|----------|-----|------|
+| fallback链 | ◐ config支持 | ❌ | ❌ | ✅ 自动切 | ❌ | ❌ | ❌ |
+| 多模型角色 | ❌ | ❌ | ✅ V4 Pro/Flash/MiMo/M3切换 | ❌ | ❌ | ✅ smol/slow/plan | ❌ |
+| cron/定时 | ✅ | ✅ scheduler | ❌ | ✅ 原生 | ❌ | ❌ | ❌ |
+| 飞书/微信IM | ❌ | ✅ | ❌ | ✅ gateway | ❌ | ❌ | ❌ |
+| 会话恢复 | ✅ | ✅ | ✅ --continue | ✅ | ✅ | ✅ | ✅ |
 
 ## 使用门槛
 
-| 维度 | codex | hermes | reasonix | opencode | omp | mimo |
-|------|-------|--------|----------|----------|-----|------|
-| 需额外服务 | 需 gateway(4202) | 无 | 需配置 4202 | 无 | 无 | 需 ZEN_API_KEY | 无 |
-| 非交互模式 | ✅ exec | ✅ chat -q | ✅ run | ✅ run --pure | ✅ run --pure | ✅ -p - | ✅ run --pure |
-| 中文支持 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 配置文件 | ~/.codex/ | ~/.hermes/ | AppData/reasonix | .opencode/ | .omp/ | .opencode/ |
+| agent | 安装 | 配置成本 | 注意事项 |
+|-------|------|---------|---------|
+| codex | npm i -g @openai/codex | 中（provider+key） | 需"保留输入文件"约束；会自删文件 |
+| reasonix | npm i -g reasonix | 中（config.toml+key） | stdin不读管道，需run "prompt" |
+| freebuff | npm i -g freebuff | **零配置，开箱即用** | 广告支持；中国=limited模式6次/天 |
+| hermes | 官方安装器 | 低（开箱即用） | Windows路径须MSYS /d/格式 |
+| opencode | npm i -g opencode | 低 | 需zen云key，失效需重登 |
+| omp | bun安装 | 低 | 走sensenova/pi |
+| mimo | npm i -g | 低 | 慢4倍 |
 
-## 最终排名（2026-08-10 同日同批 · 通过率优先，全过者按速度排序）
+## 速度排名（2026-08-10，全6/6通过）
 
-| 排名 | 工具 | 均耗时 | 通过率 | 总耗时 | 最快 | 最慢 | 省钱评级 |
-|------|------|--------|--------|--------|------|------|---------|
-| 1 | **codex** | **36.5s** | 6/6 | 219.0s | 26.0 | 48.9 | ⭐⭐（全额付费 460K） |
-| 2 | **reasonix** | **39.6s** | 6/6 | 237.9s | 21.9 | 62.8 | ⭐⭐⭐⭐⭐（cache 95%+） |
-| 3 | **hermes** | **45.3s** | 6/6 | 272.0s | 26.8 | 65.4 | ⭐⭐（无 cache 数据） |
-| 4 | **opencode** | 50.6s | 6/6 | 303.3s | 36.3 | 66.9 | ⭐⭐⭐（无 cache 数据） |
-| 5 | **omp** | 153.0s | 6/6 | 918.0s | 148.2 | 156.6 | ⭐⭐⭐⭐⭐（日志最精简） |
-| 6 | **mimo** | 198.7s | 6/6 | 1192.2s | 155.7 | 233.6 | ⭐⭐⭐（无独特优势） |
+| 排名 | agent | 均耗时 |
+|------|-------|--------|
+| 1 | codex | 36.5s |
+| 2 | reasonix | 39.6s |
+| 3 | freebuff | 44.4s |
+| 4 | hermes | 45.3s |
+| 5 | opencode | 50.6s |
+| 6 | omp | 153.0s |
+| 7 | mimo | 198.7s |
 
-## 关键结论
+> cline：3轮调试后6/6，稳定性存疑未入榜。排名规则=通过率优先，全过者按速度。
 
-1. **reasonix 最佳性价比**：速度第二（39.6s/任务），cache 命中率 95%+ 实际付费极少，一次写对不返工，无额外依赖。唯一的"快+省+稳"平衡点。
-2. **codex 最快**（36.5s/任务）但需 prompt 约束防止删文件，且全额付费无 cache。
-3. **hermes 能力最全**：唯一有 web 搜索 + 生图 + 技能 + MCP + fallback 链，速度第一梯队。
-4. **opencode 最省心**：无额外依赖、稳定、速度第三。
-5. **omp 最省 token**：日志仅 83 行，一次到位，但慢 4 倍。
-6. **mimo = opencode 子集**：功能一样慢 4 倍，无独特优势。
+## 命中率 / 省钱维度
+
+| agent | 日志行数(6任务) | token消耗 | 评价 |
+|-------|----------------|-----------|------|
+| omp | 77 | 无报告(全额付费) | ⭐⭐⭐⭐⭐ 最精简，1-2步/任务 |
+| reasonix | 144 | cache 89.8% | ⭐⭐⭐⭐⭐ 实际付费10% |
+| opencode | 233 | 无报告 | ⭐⭐⭐ 中等 |
+| mimo | 233 | 无报告 | ⭐⭐⭐ 与opencode持平 |
+| freebuff | 未测 | 未测 | ❓ 待测 |
+| codex | 325 | 460,579全额 | ⭐⭐ 自我验证多 |
+| hermes | 343 | 无报告 | ⭐⭐ 日志最密集 |
+
+## 选型结论
+
+- **速度**：codex（36.5s）
+- **省钱**：reasonix（cache 89.8%）+ omp（77行最精简）
+- **免费白嫖**：freebuff（广告支持，零配置，limited模式6次/天）
+- **能力最全**：hermes（唯一搜索+生图+skill+fallback）
+- **省心**：opencode（零额外依赖）
+- **不建议**：mimo（慢4倍无优势）
